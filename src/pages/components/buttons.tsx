@@ -1,21 +1,21 @@
 import styled from "styled-components";
 
 interface ButtonsProps {
-  addA: () => void;
-  deductA: () => void;
+    addA: () => void;
+    deductA: () => void;
 }
 
 const ButtonContainer = styled.div({
-  display: "flex",
+    display: "flex",
 });
 
 export const Buttons = (props: ButtonsProps) => {
-  const { addA, deductA } = props;
+    const {addA, deductA} = props;
 
-  return (
-    <ButtonContainer>
-      <button onClick={addA}>pisos</button>
-      <button onClick={deductA}>pisos2</button>
-    </ButtonContainer>
-  );
+    return (
+        <ButtonContainer>
+            <button onClick={addA}>pisos</button>
+            <button onClick={deductA}>pisos2</button>
+        </ButtonContainer>
+    );
 };
