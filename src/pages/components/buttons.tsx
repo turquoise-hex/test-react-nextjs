@@ -14,8 +14,8 @@ export const Buttons = (props: ButtonsProps) => {
 
     return (
         <ButtonContainer>
-            <button onClick={addA}>pisos</button>
-            <button onClick={deductA}>pisos2</button>
+            <button onClick={addA}>Add one</button>
+            <button onClick={deductA}>Remove one</button>
         </ButtonContainer>
     );
 };
