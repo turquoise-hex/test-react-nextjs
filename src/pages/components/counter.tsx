@@ -3,19 +3,19 @@ import styled from "styled-components";
 import { Buttons } from "./buttons";
 
 const CounterContainer = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  background: "teal",
-  borderRadius: 20,
-  padding: 40,
-
-  "& > p": {
-    fontSize: 40,
-    color: "#313131",
-  },
-});
-
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    background: "teal",
+    borderRadius: 20,
+    padding: 40,
+  
+    "& > p": {
+      fontSize: 40,
+      color: "#313131",
+    },
+  });
+  
 interface CounterProps {
   displayTotal: (index: number, value: number) => void; 
   index: number; 
