@@ -17,26 +17,16 @@ const CounterContainer = styled.div`
 `;
 
 interface CounterProps {
-  displayTotal: (index: number, value: number) => void;
-  addCounter: (index: number) => void;
-  deductCounter: (index: number) => void;
-  index: number;
-  initialValue: number;
+    addCounter: () => void;
+    deductCounter: () => void;
+    value: number;
 }
 
-export const Counter = ({ displayTotal, addCounter, deductCounter, index, initialValue }: CounterProps) => {
-  const handleAdd = () => {
-    addCounter(index);
-  };
-
-  const handleDeduct = () => {
-    deductCounter(index);
-  };
-
-  return (
-    <CounterContainer>
-      <p>{initialValue}</p>
-      <Buttons addA={handleAdd} deductA={handleDeduct} />
-    </CounterContainer>
-  );
+export const Counter = ({ addCounter, deductCounter, value }: CounterProps) => {
+    return (
+        <CounterContainer>
+            <p>{value}</p>
+            <Buttons addA={addCounter} deductA={deductCounter}/>
+        </CounterContainer>
+    );
 };
