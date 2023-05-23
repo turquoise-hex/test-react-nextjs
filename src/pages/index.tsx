@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React from "react";
 import { Counter } from "./components/counter";
+import { CounterProvider, useCounterContext } from './components/CounterContext';
 
 const Wrapper = styled.div`
   display: flex;
@@ -32,36 +33,38 @@ const CountersWrapper = styled.div`
   gap: 20px;
 `;
 
-export const Home = () => {
-    const [counters, setCounters] = useState([1, 1, 1]);
+const Home = () => {
+  const { counters, updateCounter } = useCounterContext();
 
-    const updateCounter = (index: number, value: number) => {
-        const newCounters = [...counters];
-        newCounters[index] = value;
-        setCounters(newCounters);
-    };
+  const total = counters.reduce((sum, value) => sum + value, 0);
 
-    const total = counters.reduce((sum, value) => sum + value, 0);
-
-    return (
-        <Wrapper>
-            <div>
-                <TotalContainer>
-                    <p>Total: {total}</p>
-                </TotalContainer>
-                <CountersWrapper>
-                    {counters.map((counter, index) =>
-                        <Counter
-                            key={index}
-                            addCounter={() => updateCounter(index, counter + 1)}
-                            deductCounter={() => updateCounter(index, counter - 1)}
-                            value={counter}
-                        />
-                    )}
-                </CountersWrapper>
-            </div>
-        </Wrapper>
-    );
+  return (
+    <Wrapper>
+      <div>
+        <TotalContainer>
+          <p>Total: {total}</p>
+        </TotalContainer>
+        <CountersWrapper>
+          {counters.map((counter, index) => (
+            <Counter
+              key={index}
+              addCounter={() => updateCounter(index, counter + 1)}
+              deductCounter={() => updateCounter(index, counter - 1)}
+              value={counter}
+            />
+          ))}
+        </CountersWrapper>
+      </div>
+    </Wrapper>
+  );
 };
 
-export default Home;
+const App = () => {
+  return (
+    <CounterProvider>
+      <Home />
+    </CounterProvider>
+  );
+};
+
+export default App;
