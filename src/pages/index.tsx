@@ -15,7 +15,7 @@ const Wrapper = styled.div({
   alignItems: "center",
   justifyContent: "center",
   gap: "20px",
-  backgroundImage: 'url(public/background.jpg'
+  // backgroundImage: 'url(public/background.jpg'
 });
 
 
