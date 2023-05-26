@@ -2,19 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import { Buttons } from "./buttons";
 
-const CounterContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: teal;
-  border-radius: 20px;
-  padding: 40px;
+const CounterContainer = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  background: "teal",
+  borderRadius: "20px",
+  padding: "40px",
 
-  & > p {
-    font-size: 40px;
-    color: #313131;
-  }
-`;
+  "& > p": {
+    fontSize: "40px",
+    color: "#313131",
+  },
+});
+
 
 interface CounterProps {
     addCounter: () => void;
