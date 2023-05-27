@@ -13,7 +13,7 @@ const ButtonContainer = styled.div({
 export const Buttons = ({ addA, deductA }: ButtonsProps) => {
   return (
     <ButtonContainer>
-      <button style={{ height: "52px", fontSize: "20px" }} onClick={addA}>
+      <button style={{ height: "52px", fontSize: "20px",  }} onClick={addA}>
         Add one
       </button>
       <button style={{ height: "52px", fontSize: "20px"  }} onClick={deductA}>
