@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React from "react";
 import { Counter } from "./components/counter";
-import { useCounterContext } from "./components/CounterContext";
+import { useCounterStore } from "./store/countersStore";
 import { motion } from "framer-motion";
 import Link from 'next/link';
 import { Button } from "./components/Button.styled";
@@ -15,7 +15,7 @@ const Wrapper = styled.div({
   justifyContent: "center",
   gap: "20px",
   color: "black",
-  background: `url(/background.jpg) no-repeat center center fixed`
+  background: `url(/background.jpg) no-repeat center center fixed`,
 });
 
 const BottomWrapper = styled.div({
@@ -29,14 +29,15 @@ const TotalContainer = styled.div({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "teal",
   borderRadius: "20px",
   padding: "40px",
-  opacity: "0.84",
   fontSize: "24px",
+  fontWeight: "bold", 
+  background: "#222",
+  color: "#fff",
   "& > p": {
     fontSize: "40px",
-    color: "#313131",
+    color: "color: #fff",
   },
 });
 
@@ -44,12 +45,9 @@ const CountersWrapper = styled.div({
   display: "flex",
   marginTop: "20px",
   gap: "20px",
-  opacity: "0.84"
 });
 
 const PageContent = styled(motion.div)({
-  // background: "#1e5b95",
-  // border: "6px solid #00041f",
   borderRadius: "20px",
   padding: "20px",
 });
@@ -57,21 +55,25 @@ const PageContent = styled(motion.div)({
 const StyledLink = styled.h1({
   display: "inline-block",
   padding: "10px 20px",
-  border: "2px solid black",
+  border: "2px solid #000",
   cursor: "pointer",
-  backgroundColor: "lightgray",
-  color: "black",
+  backgroundColor: "#ddd",
+  color: "#000",
   borderRadius: "4px",
   textDecoration: "none",
   transition: "background-color 0.3s ease",
   '&:hover': {
-    backgroundColor: "gray",
-    color: "white",
+    backgroundColor: "#aaa",
+    color: "#fff",
   }
 });
 
 const Home = () => {
-  const { counters, updateCounter, timesPressed, resetState } = useCounterContext();
+  const counters = useCounterStore((state) => state.counters);
+  const timesPressed = useCounterStore((state) => state.timesPressed);
+  const updateCounter = useCounterStore((state) => state.updateCounter);
+  const incrementTimesPressed = useCounterStore((state) => state.incrementTimesPressed);
+  const resetState = useCounterStore((state) => state.resetState);
 
   const total = counters.reduce((sum, value) => sum + value, 0);
 
@@ -90,8 +92,14 @@ const Home = () => {
           {counters.map((counter, index) => (
             <Counter
               key={index}
-              addCounter={() => updateCounter(index, counter + 1)}
-              deductCounter={() => updateCounter(index, counter - 1)}
+              addCounter={() => {
+                updateCounter(index, counter + 1);
+                incrementTimesPressed();
+              }}
+              deductCounter={() => {
+                updateCounter(index, counter - 1);
+                incrementTimesPressed();
+              }}
               value={counter}
             />
           ))}

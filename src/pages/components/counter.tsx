@@ -2,32 +2,33 @@ import React from "react";
 import styled from "styled-components";
 import { Buttons } from "./buttons";
 
-const CounterContainer = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  background: "teal",
-  borderRadius: "20px",
-  padding: "40px",
+const CounterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #222;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px;
+  color: #fff;
+`;
 
-  "& > p": {
-    fontSize: "40px",
-    color: "#313131",
-  },
-});
-
+const CounterValue = styled.p`
+  font-size: 40px;
+  margin-bottom: 10px;
+`;
 
 interface CounterProps {
-    addCounter: () => void;
-    deductCounter: () => void;
-    value: number;
+  addCounter: () => void;
+  deductCounter: () => void;
+  value: number;
 }
 
 export const Counter = ({ addCounter, deductCounter, value }: CounterProps) => {
-    return (
-        <CounterContainer>
-            <p>{value}</p>
-            <Buttons addA={addCounter} deductA={deductCounter}/>
-        </CounterContainer>
-    );
+  return (
+    <CounterContainer>
+      <CounterValue>{value}</CounterValue>
+      <Buttons addA={addCounter} deductA={deductCounter} />
+    </CounterContainer>
+  );
 };

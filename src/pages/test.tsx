@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Button } from "./components/Button.styled";
-import { useCounterContext } from "./components/CounterContext";
+import { useCounterStore } from "./store/countersStore";
 
 const Container = styled.div({
   padding: "4em",
@@ -11,7 +11,8 @@ const Container = styled.div({
 });
 
 const TestPage = () => {
-  const { timesPressed, resetState } = useCounterContext();
+  const timesPressed = useCounterStore((state) => state.timesPressed);
+  const resetState = useCounterStore((state) => state.resetState);
 
   return (
     <Container>
