@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { produce } from 'immer';
+import { create } from 'zustand';
+import produce, { Draft } from 'immer';
 
 type CounterState = {
   counters: number[];
@@ -16,48 +16,48 @@ type CounterState = {
 const initialCountersLength = 3;
 const initialCounterValue = 1;
 
-export const useCounterStore = create<CounterState>((set) => ({
-  counters: new Array(initialCountersLength).fill(initialCounterValue),
-  countersLength: initialCountersLength,
-  total: initialCountersLength * initialCounterValue,
-  timesPressed: 0,
+export const useCounterStore = create<CounterState>((set) => {
+  return {
+    counters: new Array(initialCountersLength).fill(initialCounterValue),
+    countersLength: initialCountersLength,
+    total: initialCountersLength * initialCounterValue,
+    timesPressed: 0,
 
-  updateCounter: (index, value) =>
-    set((state) => {
-      let newCounters = [...state.counters];
-      let newTotal = state.total;
-      newCounters[index] > value ? (newTotal -= 1) : (newTotal += 1);
-      newCounters[index] = value;
-      return { counters: newCounters, total: newTotal };
-    }),
-  incrementTimesPressed: () =>
-    set((state) => ({ timesPressed: state.timesPressed + 1 })),
-  resetState: () =>
-    set({
-      counters: new Array(initialCountersLength).fill(initialCounterValue),
-      timesPressed: 0,
-      total: initialCountersLength * initialCounterValue,
-      countersLength: initialCountersLength,
-    }),
-  incrementCountersLength: () =>
-    set((state) => {
-      const newCounters = [...state.counters, initialCounterValue];
-      return {
-        counters: newCounters,
-        countersLength: state.countersLength + 1,
-        total: state.total + initialCounterValue,
-      };
-    }),
-  decrementCountersLength: () =>
-    set((state) => {
-      if (state.countersLength > 1) {
-        const newCounters = state.counters.slice(0, state.countersLength - 1);
-        const decrementFromTotal = state.counters[state.counters.length-1];
-        
-        return {
-          counters: newCounters,
-          countersLength: state.countersLength - 1,
-          total: state.total - decrementFromTotal};
-      } return state;
-    }),
-}));
+    updateCounter: (index, value) =>
+  set(produce((draft: Draft<CounterState>) => {
+    const previousValue = draft.counters[index];
+    draft.counters[index] = value;
+    draft.total += value - previousValue;
+  })),
+    incrementTimesPressed: () =>
+      set(produce((draft: Draft<CounterState>) => {
+        draft.timesPressed += 1;
+      })),
+    resetState: () =>
+      set(produce((draft: Draft<CounterState>) => {
+        draft.counters = new Array(initialCountersLength).fill(initialCounterValue);
+        draft.timesPressed = 0;
+        draft.total = initialCountersLength * initialCounterValue;
+        draft.countersLength = initialCountersLength;
+      })),
+    incrementCountersLength: () =>
+      set(produce((draft: Draft<CounterState>) => {
+        if (draft.countersLength <= 5) {
+        const newCounters = [...draft.counters, initialCounterValue];
+        draft.counters = newCounters;
+        draft.countersLength += 1;
+        draft.total += initialCounterValue;
+        }
+      })),
+    decrementCountersLength: () =>
+      set(produce((draft: Draft<CounterState>) => {
+        if (draft.countersLength > 1) {
+          const newCounters = draft.counters.slice(0, draft.countersLength - 1);
+          const decrementFromTotal = draft.counters[draft.counters.length - 1];
+          draft.counters = newCounters;
+          draft.countersLength -= 1;
+          draft.total -= decrementFromTotal;
+        }
+      })),
+  };
+});
