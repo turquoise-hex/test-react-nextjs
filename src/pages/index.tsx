@@ -69,13 +69,14 @@ const StyledLink = styled.h1({
 });
 
 const Home = () => {
-  const counters = useCounterStore((state) => state.counters);
-  const timesPressed = useCounterStore((state) => state.timesPressed);
-  const updateCounter = useCounterStore((state) => state.updateCounter);
-  const incrementTimesPressed = useCounterStore((state) => state.incrementTimesPressed);
-  const resetState = useCounterStore((state) => state.resetState);
-
-  const total = counters.reduce((sum, value) => sum + value, 0);
+  const { counters, timesPressed, updateCounter, incrementTimesPressed, resetState, total } = useCounterStore((state) => ({
+    counters: state.counters,
+    timesPressed: state.timesPressed,
+    updateCounter: state.updateCounter,
+    incrementTimesPressed: state.incrementTimesPressed,
+    resetState: state.resetState,
+    total: state.total
+  }));
 
   return (
     <Wrapper>

@@ -4,20 +4,29 @@ type CounterState = {
   counters: number[];
   timesPressed: number;
   updateCounter: (index: number, value: number) => void;
+  total: number,
   incrementTimesPressed: () => void;
   resetState: () => void;
 };
 
+const countersLength = 3;
+const initialCounterValue = 1;
+const initializeCounters = new Array(countersLength).fill(initialCounterValue)
+
 export const useCounterStore = create<CounterState>((set) => ({
-  counters: [1, 1, 1],
+  counters: new Array(countersLength).fill(initialCounterValue),
+  total: countersLength * initialCounterValue,
   timesPressed: 0,
+  
   updateCounter: (index, value) =>
     set((state) => {
       let newCounters = [...state.counters];
+      let newTotal= state.total;
+      newCounters[index] > value ? newTotal -=1 : newTotal += 1;
       newCounters[index] = value;
-      return { counters: newCounters };
+      return { counters: newCounters, total: newTotal };
     }),
   incrementTimesPressed: () =>
     set((state) => ({ timesPressed: state.timesPressed + 1 })),
-  resetState: () => set({ counters: [1, 1, 1], timesPressed: 0 }),
+  resetState: () => set({ counters: initializeCounters, timesPressed: 0, total: countersLength * initialCounterValue }),
 }));
