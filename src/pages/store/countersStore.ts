@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import produce, { Draft } from 'immer';
+import { create } from "zustand";
+import produce, { Draft } from "immer";
 
 type CounterState = {
   counters: number[];
@@ -24,40 +24,56 @@ export const useCounterStore = create<CounterState>((set) => {
     timesPressed: 0,
 
     updateCounter: (index, value) =>
-  set(produce((draft: Draft<CounterState>) => {
-    const previousValue = draft.counters[index];
-    draft.counters[index] = value;
-    draft.total += value - previousValue;
-  })),
+      set(
+        produce((draft: Draft<CounterState>) => {
+          const previousValue = draft.counters[index];
+          draft.counters[index] = value;
+          draft.total += value - previousValue;
+        })
+      ),
     incrementTimesPressed: () =>
-      set(produce((draft: Draft<CounterState>) => {
-        draft.timesPressed += 1;
-      })),
+      set(
+        produce((draft: Draft<CounterState>) => {
+          draft.timesPressed += 1;
+        })
+      ),
     resetState: () =>
-      set(produce((draft: Draft<CounterState>) => {
-        draft.counters = new Array(initialCountersLength).fill(initialCounterValue);
-        draft.timesPressed = 0;
-        draft.total = initialCountersLength * initialCounterValue;
-        draft.countersLength = initialCountersLength;
-      })),
+      set(
+        produce((draft: Draft<CounterState>) => {
+          draft.counters = new Array(initialCountersLength).fill(
+            initialCounterValue
+          );
+          draft.timesPressed = 0;
+          draft.total = initialCountersLength * initialCounterValue;
+          draft.countersLength = initialCountersLength;
+        })
+      ),
     incrementCountersLength: () =>
-      set(produce((draft: Draft<CounterState>) => {
-        if (draft.countersLength <= 5) {
-        const newCounters = [...draft.counters, initialCounterValue];
-        draft.counters = newCounters;
-        draft.countersLength += 1;
-        draft.total += initialCounterValue;
-        }
-      })),
+      set(
+        produce((draft: Draft<CounterState>) => {
+          if (draft.countersLength <= 5) {
+            const newCounters = [...draft.counters, initialCounterValue];
+            draft.counters = newCounters;
+            draft.countersLength += 1;
+            draft.total += initialCounterValue;
+          }
+        })
+      ),
     decrementCountersLength: () =>
-      set(produce((draft: Draft<CounterState>) => {
-        if (draft.countersLength > 1) {
-          const newCounters = draft.counters.slice(0, draft.countersLength - 1);
-          const decrementFromTotal = draft.counters[draft.counters.length - 1];
-          draft.counters = newCounters;
-          draft.countersLength -= 1;
-          draft.total -= decrementFromTotal;
-        }
-      })),
+      set(
+        produce((draft: Draft<CounterState>) => {
+          if (draft.countersLength > 1) {
+            const newCounters = draft.counters.slice(
+              0,
+              draft.countersLength - 1
+            );
+            const decrementFromTotal =
+              draft.counters[draft.counters.length - 1];
+            draft.counters = newCounters;
+            draft.countersLength -= 1;
+            draft.total -= decrementFromTotal;
+          }
+        })
+      ),
   };
 });
