@@ -29,6 +29,7 @@ export const Counter = ({ addCounter, deductCounter, value }: CounterProps) => {
     <CounterContainer>
       <CounterValue>{value}</CounterValue>
       <Buttons addA={addCounter} deductA={deductCounter} />
+      
     </CounterContainer>
   );
 };

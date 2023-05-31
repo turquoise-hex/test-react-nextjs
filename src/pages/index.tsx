@@ -3,7 +3,7 @@ import React from "react";
 import { Counter } from "./components/counter";
 import { useCounterStore } from "./store/countersStore";
 import { motion } from "framer-motion";
-import Link from 'next/link';
+import Link from "next/link";
 import { Button } from "./components/Button.styled";
 
 const Wrapper = styled.div({
@@ -32,7 +32,8 @@ const TotalContainer = styled.div({
   borderRadius: "20px",
   padding: "40px",
   fontSize: "24px",
-  fontWeight: "bold", 
+  fontWeight: "bold",
+  opacity: "0.92",
   background: "#222",
   color: "#fff",
   "& > p": {
@@ -45,6 +46,7 @@ const CountersWrapper = styled.div({
   display: "flex",
   marginTop: "20px",
   gap: "20px",
+  opacity: "0.92",
 });
 
 const PageContent = styled(motion.div)({
@@ -62,22 +64,24 @@ const StyledLink = styled.h1({
   borderRadius: "4px",
   textDecoration: "none",
   transition: "background-color 0.3s ease",
-  '&:hover': {
+  "&:hover": {
     backgroundColor: "#aaa",
     color: "#fff",
-  }
+  },
 });
 
 const Home = () => {
-  const { counters, timesPressed, updateCounter, incrementTimesPressed, resetState, total } = useCounterStore((state) => ({
-    counters: state.counters,
-    timesPressed: state.timesPressed,
-    updateCounter: state.updateCounter,
-    incrementTimesPressed: state.incrementTimesPressed,
-    resetState: state.resetState,
-    total: state.total
-  }));
-
+  const {
+    counters,
+    timesPressed,
+    updateCounter,
+    incrementTimesPressed,
+    resetState,
+    total,
+    countersLength,
+    incrementCountersLength,
+    decrementCountersLength,
+  } = useCounterStore((state) => state);
   return (
     <Wrapper>
       <PageContent
@@ -109,6 +113,8 @@ const Home = () => {
           <p></p>
           <h1>TIMES PRESSED: {timesPressed}</h1>
           <Button onClick={resetState}>RESET STATE</Button>
+          <Button onClick={incrementCountersLength}>INCREASE COUNTERS</Button>
+          <Button onClick={decrementCountersLength}>DECREASE COUNTERS</Button>
           <p></p>
           <Link href="/test">
             <StyledLink>GO TO NEXT PAGE</StyledLink>
