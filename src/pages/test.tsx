@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { Button } from "./components/Button.styled";
 import { useCounterStore } from "./store/countersStore";
+import { useFactsStore } from "./store/factsStore";
+import { useEffect } from "react";
 
 const Container = styled.div({
   padding: "4em",
@@ -10,15 +12,24 @@ const Container = styled.div({
   margin: "0px",
 });
 
+
 const TestPage = () => {
-  const timesPressed = useCounterStore((state) => state.timesPressed);
-  const resetState = useCounterStore((state) => state.resetState);
+  const { resetState, timesPressed, total} = useCounterStore();
+  const { fact, fetchFacts, isLoading } = useFactsStore();
+
+  useEffect(() => {
+    fetchFacts(total);
+  }, [total]);
 
   return (
     <Container>
-      <h1>This is my test page</h1>
       <h1>Times you changed the counters: {timesPressed}</h1>
-      <Button>Styled Button</Button>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <p>{fact}</p>
+      )}
+      <Button onClick={resetState}>RESET STATE</Button>
     </Container>
   );
 };

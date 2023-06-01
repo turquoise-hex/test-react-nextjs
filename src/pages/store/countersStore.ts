@@ -7,7 +7,6 @@ type CounterState = {
   timesPressed: number;
   updateCounter: (index: number, value: number) => void;
   total: number;
-  incrementTimesPressed: () => void;
   resetState: () => void;
   incrementCountersLength: () => void;
   decrementCountersLength: () => void;
@@ -29,14 +28,10 @@ export const useCounterStore = create<CounterState>((set) => {
           const previousValue = draft.counters[index];
           draft.counters[index] = value;
           draft.total += value - previousValue;
+          draft.timesPressed++;
         })
       ),
-    incrementTimesPressed: () =>
-      set(
-        produce((draft: Draft<CounterState>) => {
-          draft.timesPressed += 1;
-        })
-      ),
+    
     resetState: () =>
       set(
         produce((draft: Draft<CounterState>) => {

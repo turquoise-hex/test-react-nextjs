@@ -75,7 +75,6 @@ const Home = () => {
     counters,
     timesPressed,
     updateCounter,
-    incrementTimesPressed,
     resetState,
     total,
     countersLength,
@@ -99,11 +98,9 @@ const Home = () => {
               key={index}
               addCounter={() => {
                 updateCounter(index, counter + 1);
-                incrementTimesPressed();
               }}
               deductCounter={() => {
                 updateCounter(index, counter - 1);
-                incrementTimesPressed();
               }}
               value={counter}
             />
