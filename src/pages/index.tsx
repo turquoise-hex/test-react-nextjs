@@ -5,6 +5,7 @@ import { useCounterStore } from "./store/countersStore";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "./components/Button.styled";
+import { StyledLink } from "./components/Link.styled";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -52,23 +53,11 @@ const CountersWrapper = styled.div({
 const PageContent = styled(motion.div)({
   borderRadius: "20px",
   padding: "20px",
+  paddingBottom: "0px"
+  
 });
 
-const StyledLink = styled.h1({
-  display: "inline-block",
-  padding: "10px 20px",
-  border: "2px solid #000",
-  cursor: "pointer",
-  backgroundColor: "#ddd",
-  color: "#000",
-  borderRadius: "4px",
-  textDecoration: "none",
-  transition: "background-color 0.3s ease",
-  "&:hover": {
-    backgroundColor: "#aaa",
-    color: "#fff",
-  },
-});
+
 
 const Home = () => {
   const {
@@ -87,7 +76,7 @@ const Home = () => {
         as={motion.div}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.09 }}
       >
         <TotalContainer>
           <p>Total: {total}</p>
@@ -106,8 +95,9 @@ const Home = () => {
             />
           ))}
         </CountersWrapper>
+        </PageContent>
         <BottomWrapper>
-          <p></p>
+          
           <h1>TIMES PRESSED: {timesPressed}</h1>
           <Button onClick={resetState}>RESET STATE</Button>
           <Button onClick={incrementCountersLength}>INCREASE COUNTERS</Button>
@@ -117,7 +107,7 @@ const Home = () => {
             <StyledLink>GO TO NEXT PAGE</StyledLink>
           </Link>
         </BottomWrapper>
-      </PageContent>
+      
     </Wrapper>
   );
 };
