@@ -1,11 +1,20 @@
 import styled from "styled-components";
 import React from "react";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Counter } from "./components/counter";
-import { useCounterStore } from "./store/countersStore";
+import {
+  getCounters,
+  updateCounterFirestore,
+  deleteCounterFirestore,
+  CounterType,
+} from "./store/countersStore";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "./components/Button.styled";
 import { StyledLink } from "./components/Link.styled";
+import AddCounterForm from "./components/AddCounterForm";
+import { useAuth } from "../hooks/useAuth";
+import { signInWithGoogle, logout } from "@/config/firebase";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -17,13 +26,6 @@ const Wrapper = styled.div({
   gap: "20px",
   color: "black",
   background: `url(/background.jpg) no-repeat center center fixed`,
-});
-
-const BottomWrapper = styled.div({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
 });
 
 const TotalContainer = styled.div({
@@ -53,23 +55,54 @@ const CountersWrapper = styled.div({
 const PageContent = styled(motion.div)({
   borderRadius: "20px",
   padding: "20px",
-  paddingBottom: "0px"
-  
+  paddingBottom: "0px",
 });
 
-
-
 const Home = () => {
+  const { user, loading } = useAuth();
+
+  const queryClient = useQueryClient();
+
   const {
-    counters,
-    timesPressed,
-    updateCounter,
-    resetState,
-    total,
-    countersLength,
-    incrementCountersLength,
-    decrementCountersLength,
-  } = useCounterStore((state) => state);
+    data: counters,
+    isLoading: isLoadingCounters,
+    error,
+  } = useQuery<CounterType[], Error>("counters", getCounters);
+
+  const updateCounterMutation = useMutation(updateCounterFirestore, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("counters");
+    },
+  });
+
+
+
+  const deleteCounterMutation = useMutation(deleteCounterFirestore, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("counters");
+    },
+  });
+
+  const handleCounterUpdate = (id: string, value: number) => {
+    updateCounterMutation.mutate({ id, value });
+  };
+
+  const handleCounterDelete = (id: string) => {
+    deleteCounterMutation.mutate(id);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <Wrapper>
+        <Button onClick={signInWithGoogle}>Sign in with Google</Button>;
+      </Wrapper>   
+  )}
+
+
   return (
     <Wrapper>
       <PageContent
@@ -79,35 +112,41 @@ const Home = () => {
         whileHover={{ scale: 1.09 }}
       >
         <TotalContainer>
-          <p>Total: {total}</p>
+          <p>
+            Total:{" "}
+            {counters?.reduce((total, counter) => total + counter.value, 0) ||
+              0}
+          </p>
         </TotalContainer>
-        <CountersWrapper>
-          {counters.map((counter, index) => (
-            <Counter
-              key={index}
-              addCounter={() => {
-                updateCounter(index, counter + 1);
-              }}
-              deductCounter={() => {
-                updateCounter(index, counter - 1);
-              }}
-              value={counter}
-            />
-          ))}
-        </CountersWrapper>
-        </PageContent>
-        <BottomWrapper>
-          
-          <h1>TIMES PRESSED: {timesPressed}</h1>
-          <Button onClick={resetState}>RESET STATE</Button>
-          <Button onClick={incrementCountersLength}>INCREASE COUNTERS</Button>
-          <Button onClick={decrementCountersLength}>DECREASE COUNTERS</Button>
-          <p></p>
-          <Link href="/test">
-            <StyledLink>GO TO NEXT PAGE</StyledLink>
-          </Link>
-        </BottomWrapper>
-      
+        {isLoadingCounters ? (
+          <div>Loading...</div>
+        ) : error instanceof Error ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <>
+            <CountersWrapper>
+              {counters?.map((counter) => (
+                <React.Fragment key={counter.id}>
+                  <Counter
+                    id={counter.id}
+                    addCounter={() => {
+                      handleCounterUpdate(counter.id, counter.value + 1);
+                    }}
+                    deductCounter={() => {
+                      handleCounterUpdate(counter.id, counter.value - 1);
+                    }}
+                    value={counter.value}
+                    deleteCounter={() => handleCounterDelete(counter.id)}
+                  />
+                </React.Fragment>
+              ))}
+            </CountersWrapper>
+            
+          </>
+        )}
+      </PageContent>
+      <AddCounterForm style={{marginTop: "60px"}} counters={counters}/>
+      <Button onClick={logout}>Logout</Button>
     </Wrapper>
   );
 };

@@ -15,6 +15,7 @@ export const Button = styled.button({
     width: "fit-content",
     wordBreak: "break-word", 
     border: "0",
-    margin: "0.25em"
+    margin: "0.25em",
+    
 
 })
