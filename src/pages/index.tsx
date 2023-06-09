@@ -52,7 +52,7 @@ const CountersWrapper = styled.div({
   display: "flex",
   marginTop: "20px",
   gap: "20px",
-  opacity: "0.92",
+  opacity: "0.91",
   '@media (max-width: 600px)': {
     flexDirection: "column",
     alignItems: "flex-start"
@@ -64,6 +64,7 @@ const PageContent = styled(motion.div)({
   padding: "20px",
   paddingBottom: "0px",
 });
+
 
 const Home = () => {
   const { user, loading } = useAuth();
