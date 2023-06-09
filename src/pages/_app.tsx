@@ -1,4 +1,4 @@
-// _app.tsx
+import '../../globals.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { AppProps } from 'next/app';
 

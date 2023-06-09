@@ -20,16 +20,20 @@ const Wrapper = styled.div({
   display: "flex",
   flexDirection: "column",
   width: "100vw",
-  height: "100vh",
+  //height: "100vh",
   alignItems: "center",
-  justifyContent: "center",
+  //justifyContent: "center",
   gap: "20px",
   color: "black",
   background: `url(/background.jpg) no-repeat center center fixed`,
   backgroundSize: "cover",
   backgroundPosition: "center",
-  overflow: "auto"
+ 
+  overflow: "auto", 
+  minHeight: "100%",
+  paddingTop: '10%', 
 });
+
 
 const TotalContainer = styled.div({
   display: "flex",
@@ -53,6 +57,7 @@ const CountersWrapper = styled.div({
   marginTop: "20px",
   gap: "20px",
   opacity: "0.91",
+  flexWrap: "wrap",
   '@media (max-width: 600px)': {
     flexDirection: "column",
     alignItems: "flex-start"
@@ -117,7 +122,7 @@ const Home = () => {
         as={motion.div}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.09 }}
+        whileHover={{ scale: 1.02 }}
       >
         <TotalContainer>
           <p>
