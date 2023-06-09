@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import produce, { Draft } from "immer";
 import { doc, getDocs, setDoc, updateDoc, deleteDoc, collection } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '../config/firebase';
 
 // type CounterState = {
 //   counters: number[];

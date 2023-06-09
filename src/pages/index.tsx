@@ -1,18 +1,18 @@
 import styled from "styled-components";
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { Counter } from "./components/counter";
+import { Counter } from "../components/counter";
 import {
   getCounters,
   updateCounterFirestore,
   deleteCounterFirestore,
   CounterType,
-} from "./store/countersStore";
+} from "../store/countersStore";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Button } from "./components/Button.styled";
-import { StyledLink } from "./components/Link.styled";
-import AddCounterForm from "./components/AddCounterForm";
+import { Button } from "../components/Button.styled";
+import { StyledLink } from "../components/Link.styled";
+import AddCounterForm from "../components/AddCounterForm";
 import { useAuth } from "../hooks/useAuth";
 import { signInWithGoogle, logout } from "@/config/firebase";
 
@@ -26,6 +26,9 @@ const Wrapper = styled.div({
   gap: "20px",
   color: "black",
   background: `url(/background.jpg) no-repeat center center fixed`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  overflow: "auto"
 });
 
 const TotalContainer = styled.div({
@@ -50,6 +53,10 @@ const CountersWrapper = styled.div({
   marginTop: "20px",
   gap: "20px",
   opacity: "0.92",
+  '@media (max-width: 600px)': {
+    flexDirection: "column",
+    alignItems: "flex-start"
+  }
 });
 
 const PageContent = styled(motion.div)({
