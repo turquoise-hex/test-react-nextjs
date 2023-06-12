@@ -45,8 +45,8 @@ const AddCounterForm: React.FC<AddCounterFormProps> = ({ counters, style }) => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (counters && counters.length >= 5) {
-      alert("You cannot create more than 5 counters");
+    if (counters && counters.length >= 12) {
+      alert("You cannot create more than 12 counters");
     } else if (id && value !== "") {
       createCounterMutation.mutate({ id, value: Number(value) });
       setId("");
@@ -74,6 +74,7 @@ const AddCounterForm: React.FC<AddCounterFormProps> = ({ counters, style }) => {
           required
           style={{}}
         />
+       
       </FieldsContainer>
       <Button style={{ marginTop: "10px" }} type="submit">Create Counter</Button>
     </FormContainer>

@@ -1,7 +1,46 @@
-import { create } from "zustand";
-import produce, { Draft } from "immer";
-import { doc, getDocs, setDoc, updateDoc, deleteDoc, collection } from 'firebase/firestore';
+// import { create } from "zustand";
+// import produce, { Draft } from "immer";
+import { doc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { auth } from '../config/firebase';
+
+
+export type CounterType = {
+  id: string;
+  value: number;
+}
+
+
+export const getCounters = async (): Promise<CounterType[]> => {
+  const uid = auth.currentUser?.uid; // Get the current user's UID
+  if (!uid) throw new Error('User is not authenticated');
+  const countersCol = collection(db, 'counters');
+  const q = query(countersCol, where("owner", "==", uid)); // Only fetch counters that the current user owns
+  const countersSnapshot = await getDocs(q);
+  return countersSnapshot.docs.map(doc => ({id: doc.id, value: doc.data().value }));
+}
+
+export const createCounterFirestore = async ({ id, value }: { id: string, value: number }) => {
+  const uid = auth.currentUser?.uid; // Get the current user's UID
+  if (!uid) throw new Error('User is not authenticated');
+  const docRef = doc(db, 'counters', id);
+  await setDoc(docRef, { id, value, owner: uid }); // Include the owner field when creating a counter
+  return { id, value };
+};
+
+export const updateCounterFirestore = async ({ id, value }: { id: string; value: number }) => {
+  const counterRef = doc(db, 'counters', id);
+  await updateDoc(counterRef, { value });
+}
+
+export const deleteCounterFirestore = async (id: string) => {
+  const counterRef = doc(db, 'counters', id);
+  await deleteDoc(counterRef);
+}
+
+
+
+
 
 // type CounterState = {
 //   counters: number[];
@@ -74,32 +113,3 @@ import { db } from '../config/firebase';
 //       ),
 //   };
 // });
-
-
-export type CounterType = {
-  id: string;
-  value: number;
-}
-
-
-export const getCounters = async (): Promise<CounterType[]> => {
-  const countersCol = collection(db, 'counters');
-  const countersSnapshot = await getDocs(countersCol);
-  return countersSnapshot.docs.map(doc => ({id: doc.id, value: doc.data().value }));
-}
-
-export const createCounterFirestore = async ({ id, value }: { id: string, value: number }) => {
-  const docRef = doc(db, 'counters', id);
-  await setDoc(docRef, { id, value });
-  return { id, value };
-};
-
-export const updateCounterFirestore = async ({ id, value }: { id: string; value: number }) => {
-  const counterRef = doc(db, 'counters', id);
-  await updateDoc(counterRef, { value });
-}
-
-export const deleteCounterFirestore = async (id: string) => {
-  const counterRef = doc(db, 'counters', id);
-  await deleteDoc(counterRef);
-}

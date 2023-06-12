@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Counter } from "../components/counter";
 import {
@@ -9,9 +9,7 @@ import {
   CounterType,
 } from "../store/countersStore";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { Button } from "../components/Button.styled";
-import { StyledLink } from "../components/Link.styled";
 import AddCounterForm from "../components/AddCounterForm";
 import { useAuth } from "../hooks/useAuth";
 import { signInWithGoogle, logout } from "@/config/firebase";
@@ -31,7 +29,7 @@ const Wrapper = styled.div({
  
   overflow: "auto", 
   minHeight: "100%",
-  paddingTop: '10%', 
+  paddingTop: '5%', 
 });
 
 
@@ -72,6 +70,10 @@ const PageContent = styled(motion.div)({
 
 
 const Home = () => {
+
+  const [page, setPage] = useState(0);
+  const itemsPerPage = 4;
+
   const { user, loading } = useAuth();
 
   const queryClient = useQueryClient();
@@ -122,7 +124,7 @@ const Home = () => {
         as={motion.div}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.05 }}
       >
         <TotalContainer>
           <p>
@@ -138,7 +140,8 @@ const Home = () => {
         ) : (
           <>
             <CountersWrapper>
-              {counters?.map((counter) => (
+              {/* Slice the counters array to get the counters for the current page */}
+              {counters?.slice(page * itemsPerPage, (page + 1) * itemsPerPage).map((counter) => (
                 <React.Fragment key={counter.id}>
                   <Counter
                     id={counter.id}
@@ -158,7 +161,14 @@ const Home = () => {
           </>
         )}
       </PageContent>
-      <AddCounterForm style={{marginTop: "60px"}} counters={counters}/>
+      <AddCounterForm style={{marginTop: "30px"}} counters={counters}/>
+      {((counters?.length) ?? 0) > (page + 1) * itemsPerPage && (
+        <button onClick={() => setPage(page + 1)}>NEXT PAGE</button> // Add an onClick handler to increment the page
+      )}
+      {/* If not on the first page, show a "Previous Page" button */}
+      {page > 0 && (
+        <button onClick={() => setPage(page - 1)}>PREVIOUS PAGE</button>
+      )}
       <Button onClick={logout}>Logout</Button>
     </Wrapper>
   );
