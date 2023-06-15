@@ -1,6 +1,4 @@
-// import { create } from "zustand";
-// import produce, { Draft } from "immer";
-import { doc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where } from 'firebase/firestore';
+import { doc, getDocs, setDoc, updateDoc, deleteDoc, collection, query, where, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { auth } from '../config/firebase';
 
@@ -20,12 +18,13 @@ export const getCounters = async (): Promise<CounterType[]> => {
   return countersSnapshot.docs.map(doc => ({id: doc.id, value: doc.data().value }));
 }
 
-export const createCounterFirestore = async ({ id, value }: { id: string, value: number }) => {
+export const createCounterFirestore = async ({ value }: { value: number }) => {
   const uid = auth.currentUser?.uid; // Get the current user's UID
   if (!uid) throw new Error('User is not authenticated');
-  const docRef = doc(db, 'counters', id);
-  await setDoc(docRef, { id, value, owner: uid }); // Include the owner field when creating a counter
-  return { id, value };
+  const countersCol = collection(db, 'counters');
+  // Include owner ID while creating a counter
+  const docRef = await addDoc(countersCol, {value, owner: uid}); 
+  return { id: docRef.id, value };
 };
 
 export const updateCounterFirestore = async ({ id, value }: { id: string; value: number }) => {
