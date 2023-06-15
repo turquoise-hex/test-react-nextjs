@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Counter } from "../components/counter";
 
 import { motion } from "framer-motion";
 import AddCounterForm from "../components/AddCounterForm";
 import Total from "@/components/Total";
 import { useCounters } from "@/hooks/useCounters";
+import { Loader } from "@/components/Loader";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -22,23 +23,6 @@ const Wrapper = styled.div({
   overflow: "auto",
   minHeight: "100%",
   paddingTop: "5%",
-});
-
-const TotalContainer = styled.div({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "20px",
-  padding: "40px",
-  fontSize: "24px",
-  fontWeight: "bold",
-  opacity: "0.92",
-  background: "#222",
-  color: "#fff",
-  "& > p": {
-    fontSize: "40px",
-    color: "color: #fff",
-  },
 });
 
 const CountersWrapper = styled.div({
@@ -59,11 +43,27 @@ const PageContent = styled(motion.div)({
   paddingBottom: "0px",
 });
 
+
+
+const StyledAddCounterForm = styled(AddCounterForm)({
+  marginTop: 30
+})
+
 const Home = () => {
   const [page, setPage] = useState(0);
   const itemsPerPage = 4;
-  const {counters,counterTotal, isLoadingCounters, error, deleteCounter, addCounter, deductCounter} = useCounters()
-  
+  const {
+    counters,
+    counterTotal,
+    isLoadingCounters,
+    error,
+    deleteCounter,
+    addCounter,
+    deductCounter,
+    createCounter,
+    isSuccess,
+  } = useCounters();
+
   return (
     <Wrapper>
       <PageContent
@@ -73,15 +73,14 @@ const Home = () => {
         whileHover={{ scale: 1.05 }}
       >
         <Total total={counterTotal} />
-        {isLoadingCounters ? (
-          <div>Loading...</div>
-        ) : error instanceof Error ? (
-          <div>Error: {error.message}</div>
-        ) : (
-          <>
-            <CountersWrapper>
-              {/* Slice the counters array to get the counters for the current page */}
-              {counters && counters
+        <Loader isLoading={isLoadingCounters} />
+        <ErrorMessage error={error} />
+
+        {!isLoadingCounters && isSuccess && (
+          <CountersWrapper>
+            {/* Slice the counters array to get the counters for the current page */}
+            {counters &&
+              counters
                 .slice(page * itemsPerPage, (page + 1) * itemsPerPage)
                 .map((counter) => (
                   <Counter
@@ -93,11 +92,10 @@ const Home = () => {
                     deleteCounter={() => deleteCounter(counter.id)}
                   />
                 ))}
-            </CountersWrapper>
-          </>
+          </CountersWrapper>
         )}
       </PageContent>
-      <AddCounterForm style={{ marginTop: "30px" }} counters={counters} />
+      <StyledAddCounterForm counters={counters} createCounter={createCounter} />
       {(counters?.length ?? 0) > (page + 1) * itemsPerPage && (
         <button onClick={() => setPage(page + 1)}>NEXT PAGE</button>
       )}

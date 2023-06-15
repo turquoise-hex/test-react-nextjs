@@ -23,6 +23,7 @@ export const useCounters = () => {
     data: counters,
     isLoading: isLoadingCounters,
     error,
+    isSuccess,
     refetch,
   } = useQuery<CounterType[], Error>("counters", async () => {
     const uid = auth.currentUser?.uid; // Get the current user's UID
@@ -50,7 +51,7 @@ export const useCounters = () => {
     await refetch();
   });
 
-  const { mutate: createCounter } = useMutation(
+  const { mutate: createCounterInner } = useMutation(
     async ({ value }: { value: number }) => {
       const uid = auth.currentUser?.uid; // Get the current user's UID
       if (!uid) throw new Error("User is not authenticated");
@@ -68,7 +69,12 @@ export const useCounters = () => {
   const addCounter = (counter: CounterType) =>
     updateCounters({ id: counter.id, value: counter.value + 1 });
 
-    const counterTotal = counters?.reduce((total, counter) => total + counter.value, 0) || 0
+  const counterTotal =
+    counters?.reduce((total, counter) => total + counter.value, 0) || 0;
+
+  const createCounter = (value: number) => {
+    createCounterInner({ value });
+  };
 
   return {
     counters,
@@ -77,6 +83,7 @@ export const useCounters = () => {
     createCounter,
     deductCounter,
     addCounter,
+    isSuccess,
     isLoadingCounters,
     counterTotal,
     error,

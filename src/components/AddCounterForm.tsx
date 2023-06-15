@@ -2,36 +2,43 @@ import React, { useState, FormEvent } from "react";
 import { Button } from "./Button.styled";
 import styled from "styled-components";
 import { CounterType, useCounters } from "@/hooks/useCounters";
+import { UseMutateFunction } from "react-query";
 
 interface AddCounterFormProps {
-  counters: CounterType[] | undefined;
+  counters?: CounterType[];
   style?: React.CSSProperties;
 }
 
-const FormContainer = styled.form((props) => ({
+const FormContainer = styled.form({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  ...props.style,
-}));
-
-const FieldsContainer = styled.div({
-  display: "flex", 
-  gap: "10px", 
 });
 
-const Input = styled.input((props) => ({
+const FieldsContainer = styled.div({
+  display: "flex",
+  gap: "10px",
+});
+
+const Input = styled.input({
   height: "52px",
   fontSize: "20px",
   padding: "8px 16px",
   border: "none",
   borderRadius: "4px",
   marginBottom: "10px",
-  ...props.style,
-}));
+});
 
-const AddCounterForm = ({ style }: AddCounterFormProps) => {
-  const {counters, createCounter} = useCounters()
+interface AddCounterForm extends React.FormHTMLAttributes<HTMLFormElement> {
+  counters?: CounterType[];
+  createCounter: (value: number) => void;
+}
+
+const AddCounterForm = ({
+  counters,
+  createCounter,
+  ...props
+}: AddCounterForm) => {
   const [value, setValue] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
@@ -39,14 +46,13 @@ const AddCounterForm = ({ style }: AddCounterFormProps) => {
     if (counters && counters.length >= 12) {
       alert("You cannot create more than 12 counters");
     } else if (value !== "") {
-      createCounter({ value: Number(value) });
+      createCounter(Number(value));
       setValue("");
     }
   };
 
   return (
-    <>
-     <FormContainer style={style} onSubmit={handleSubmit}>
+    <FormContainer {...props} onSubmit={handleSubmit}>
       <FieldsContainer>
         <Input
           type="number"
@@ -54,13 +60,12 @@ const AddCounterForm = ({ style }: AddCounterFormProps) => {
           onChange={(e) => setValue(e.target.value)}
           placeholder="Value"
           required
-          style={{}}
         />
-       
       </FieldsContainer>
-      <Button style={{ marginTop: "10px" }} type="submit">Create Counter</Button>
+      <Button style={{ marginTop: "10px" }} type="submit">
+        Create Counter
+      </Button>
     </FormContainer>
-    </>
   );
 };
 
