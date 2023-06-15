@@ -13,25 +13,23 @@ import { Button } from "../components/Button.styled";
 import AddCounterForm from "../components/AddCounterForm";
 import { useAuth } from "../hooks/useAuth";
 import { signInWithGoogle, logout } from "@/config/firebase";
+import Total from "@/components/Total";
 
 const Wrapper = styled.div({
   display: "flex",
   flexDirection: "column",
   width: "100vw",
-  //height: "100vh",
   alignItems: "center",
-  //justifyContent: "center",
   gap: "20px",
   color: "black",
   background: `url(/background.jpg) no-repeat center center fixed`,
   backgroundSize: "cover",
   backgroundPosition: "center",
- 
-  overflow: "auto", 
-  minHeight: "100%",
-  paddingTop: '5%', 
-});
 
+  overflow: "auto",
+  minHeight: "100%",
+  paddingTop: "5%",
+});
 
 const TotalContainer = styled.div({
   display: "flex",
@@ -56,10 +54,10 @@ const CountersWrapper = styled.div({
   gap: "20px",
   opacity: "0.91",
   flexWrap: "wrap",
-  '@media (max-width: 600px)': {
+  "@media (max-width: 600px)": {
     flexDirection: "column",
-    alignItems: "flex-start"
-  }
+    alignItems: "flex-start",
+  },
 });
 
 const PageContent = styled(motion.div)({
@@ -68,34 +66,28 @@ const PageContent = styled(motion.div)({
   paddingBottom: "0px",
 });
 
-
 const Home = () => {
-
   const [page, setPage] = useState(0);
   const itemsPerPage = 4;
 
   const { user, loading } = useAuth();
-
-  const queryClient = useQueryClient();
-
   const {
     data: counters,
     isLoading: isLoadingCounters,
     error,
+    refetch,
   } = useQuery<CounterType[], Error>("counters", getCounters);
 
-  const updateCounterMutation = useMutation(updateCounterFirestore, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("counters");
-    },
-  });
+  const updateCounterMutation = useMutation(
+    async ({ id, value }: { id: string; value: number }) => {
+      await updateCounterFirestore({ id, value });
+      await refetch();
+    }
+  );
 
-
-
-  const deleteCounterMutation = useMutation(deleteCounterFirestore, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("counters");
-    },
+  const deleteCounterMutation = useMutation(async (id: string) => {
+    await deleteCounterFirestore(id);
+    await refetch();
   });
 
   const handleCounterUpdate = (id: string, value: number) => {
@@ -114,9 +106,9 @@ const Home = () => {
     return (
       <Wrapper>
         <Button onClick={signInWithGoogle}>Sign in with Google</Button>;
-      </Wrapper>   
-  )}
-
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>
@@ -126,13 +118,7 @@ const Home = () => {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.05 }}
       >
-        <TotalContainer>
-          <p>
-            Total:{" "}
-            {counters?.reduce((total, counter) => total + counter.value, 0) ||
-              0}
-          </p>
-        </TotalContainer>
+        <Total counters={counters} />
         {isLoadingCounters ? (
           <div>Loading...</div>
         ) : error instanceof Error ? (
@@ -141,9 +127,11 @@ const Home = () => {
           <>
             <CountersWrapper>
               {/* Slice the counters array to get the counters for the current page */}
-              {counters?.slice(page * itemsPerPage, (page + 1) * itemsPerPage).map((counter) => (
-                <React.Fragment key={counter.id}>
+              {counters
+                ?.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
+                .map((counter) => (
                   <Counter
+                    key={counter.id}
                     id={counter.id}
                     addCounter={() => {
                       handleCounterUpdate(counter.id, counter.value + 1);
@@ -154,18 +142,15 @@ const Home = () => {
                     value={counter.value}
                     deleteCounter={() => handleCounterDelete(counter.id)}
                   />
-                </React.Fragment>
-              ))}
+                ))}
             </CountersWrapper>
-            
           </>
         )}
       </PageContent>
-      <AddCounterForm style={{marginTop: "30px"}} counters={counters}/>
-      {((counters?.length) ?? 0) > (page + 1) * itemsPerPage && (
-        <button onClick={() => setPage(page + 1)}>NEXT PAGE</button> // Add an onClick handler to increment the page
+      <AddCounterForm style={{ marginTop: "30px" }} counters={counters} />
+      {(counters?.length ?? 0) > (page + 1) * itemsPerPage && (
+        <button onClick={() => setPage(page + 1)}>NEXT PAGE</button>
       )}
-      {/* If not on the first page, show a "Previous Page" button */}
       {page > 0 && (
         <button onClick={() => setPage(page - 1)}>PREVIOUS PAGE</button>
       )}

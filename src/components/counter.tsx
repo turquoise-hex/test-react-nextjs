@@ -37,7 +37,7 @@ interface CounterProps {
 export const Counter = ({id, addCounter, deductCounter, value, deleteCounter } : CounterProps) => {
   return (
     <CounterContainer>
-      <CounterId>ID: {id}</CounterId>
+      {/* <CounterId>ID: {id}</CounterId> */}
       <CounterValue>{value}</CounterValue>
       <Buttons addA={addCounter} deductA={deductCounter} />
       <Button onClick={deleteCounter}>DELETE COUNTER</Button>
