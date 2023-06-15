@@ -1,8 +1,7 @@
 import React, { useState, FormEvent } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { createCounterFirestore, CounterType } from "../store/countersStore";
 import { Button } from "./Button.styled";
 import styled from "styled-components";
+import { CounterType, useCounters } from "@/hooks/useCounters";
 
 interface AddCounterFormProps {
   counters: CounterType[] | undefined;
@@ -31,15 +30,8 @@ const Input = styled.input((props) => ({
   ...props.style,
 }));
 
-const AddCounterForm: React.FC<AddCounterFormProps> = ({ counters, style }) => {
-  const queryClient = useQueryClient();
-
-  const createCounterMutation = useMutation(createCounterFirestore, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("counters");
-    },
-  });
-
+const AddCounterForm = ({ style }: AddCounterFormProps) => {
+  const {counters, createCounter} = useCounters()
   const [value, setValue] = useState("");
 
   const handleSubmit = (e: FormEvent) => {
@@ -47,7 +39,7 @@ const AddCounterForm: React.FC<AddCounterFormProps> = ({ counters, style }) => {
     if (counters && counters.length >= 12) {
       alert("You cannot create more than 12 counters");
     } else if (value !== "") {
-      createCounterMutation.mutate({ value: Number(value) });
+      createCounter({ value: Number(value) });
       setValue("");
     }
   };

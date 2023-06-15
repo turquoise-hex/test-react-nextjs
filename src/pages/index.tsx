@@ -2,18 +2,11 @@ import styled from "styled-components";
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Counter } from "../components/counter";
-import {
-  getCounters,
-  updateCounterFirestore,
-  deleteCounterFirestore,
-  CounterType,
-} from "../store/countersStore";
+
 import { motion } from "framer-motion";
-import { Button } from "../components/Button.styled";
 import AddCounterForm from "../components/AddCounterForm";
-import { useAuth } from "../hooks/useAuth";
-import { signInWithGoogle, logout } from "@/config/firebase";
 import Total from "@/components/Total";
+import { useCounters } from "@/hooks/useCounters";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -69,47 +62,8 @@ const PageContent = styled(motion.div)({
 const Home = () => {
   const [page, setPage] = useState(0);
   const itemsPerPage = 4;
-
-  const { user, loading } = useAuth();
-  const {
-    data: counters,
-    isLoading: isLoadingCounters,
-    error,
-    refetch,
-  } = useQuery<CounterType[], Error>("counters", getCounters);
-
-  const updateCounterMutation = useMutation(
-    async ({ id, value }: { id: string; value: number }) => {
-      await updateCounterFirestore({ id, value });
-      await refetch();
-    }
-  );
-
-  const deleteCounterMutation = useMutation(async (id: string) => {
-    await deleteCounterFirestore(id);
-    await refetch();
-  });
-
-  const handleCounterUpdate = (id: string, value: number) => {
-    updateCounterMutation.mutate({ id, value });
-  };
-
-  const handleCounterDelete = (id: string) => {
-    deleteCounterMutation.mutate(id);
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return (
-      <Wrapper>
-        <Button onClick={signInWithGoogle}>Sign in with Google</Button>;
-      </Wrapper>
-    );
-  }
-
+  const {counters,counterTotal, isLoadingCounters, error, deleteCounter, addCounter, deductCounter} = useCounters()
+  
   return (
     <Wrapper>
       <PageContent
@@ -118,7 +72,7 @@ const Home = () => {
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.05 }}
       >
-        <Total counters={counters} />
+        <Total total={counterTotal} />
         {isLoadingCounters ? (
           <div>Loading...</div>
         ) : error instanceof Error ? (
@@ -127,20 +81,16 @@ const Home = () => {
           <>
             <CountersWrapper>
               {/* Slice the counters array to get the counters for the current page */}
-              {counters
-                ?.slice(page * itemsPerPage, (page + 1) * itemsPerPage)
+              {counters && counters
+                .slice(page * itemsPerPage, (page + 1) * itemsPerPage)
                 .map((counter) => (
                   <Counter
                     key={counter.id}
                     id={counter.id}
-                    addCounter={() => {
-                      handleCounterUpdate(counter.id, counter.value + 1);
-                    }}
-                    deductCounter={() => {
-                      handleCounterUpdate(counter.id, counter.value - 1);
-                    }}
+                    addCounter={() => addCounter(counter)}
+                    deductCounter={() => deductCounter(counter)}
                     value={counter.value}
-                    deleteCounter={() => handleCounterDelete(counter.id)}
+                    deleteCounter={() => deleteCounter(counter.id)}
                   />
                 ))}
             </CountersWrapper>
@@ -154,7 +104,6 @@ const Home = () => {
       {page > 0 && (
         <button onClick={() => setPage(page - 1)}>PREVIOUS PAGE</button>
       )}
-      <Button onClick={logout}>Logout</Button>
     </Wrapper>
   );
 };
